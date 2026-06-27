@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>大学生亚健康科普小程序 - 演示</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: #f2f2f7;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
+    .phone {
+      width: 375px;
+      height: 812px;
+      background: #fff;
+      border-radius: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .notch {
+      height: 44px;
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 10;
+    }
+    .nav-bar {
+      height: 44px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 0.5px solid #e5e5e5;
+      z-index: 10;
+    }
+    .nav-title { font-size: 17px; font-weight: 600; color: #000; }
+    .nav-back {
+      position: absolute;
+      left: 16px;
+      font-size: 20px;
+      color: #007aff;
+      cursor: pointer;
+      display: none;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: #f8f9fa;
+      -webkit-overflow-scrolling: touch;
+    }
+    .content::-webkit-scrollbar { display: none; }
+
+    /* Tab bar */
+    .tab-bar {
+      height: 83px;
+      background: #fff;
+      border-top: 0.5px solid #e5e5e5;
+      display: flex;
+      justify-content: space-around;
+      padding-bottom: 20px;
+      z-index: 10;
+    }
+    .tab-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #999;
+      font-size: 10px;
+      padding-top: 6px;
+    }
+    .tab-item.active { color: #378add; }
+    .tab-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      background: #e5e5e5;
+      color: #999;
+    }
+    .tab-item.active .tab-icon { background: #e6f1fb; color: #378add; }
+
+    /* Common */
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 12px;
+    }
+    .text-secondary { font-size: 13px; color: #999; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+    /* Page */
+    .page { display: none; padding: 12px; }
+    .page.active { display: block; }
+
+    /* Home */
+    .banner {
+      height: 140px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #378add 0%, #1d9e75 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 24px;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+    .banner-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .banner-subtitle { font-size: 14px; opacity: 0.9; }
+    .quick-grid { display: flex; gap: 12px; margin-bottom: 16px; }
+    .quick-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 0;
+      background: #fff;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .quick-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .quick-icon.knowledge { background: #378add; }
+    .quick-icon.card { background: #d85a30; }
+    .recommend-item { display: flex; padding: 12px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+    .recommend-item:last-child { border-bottom: none; }
+    .recommend-cover {
+      width: 80px; height: 80px; border-radius: 8px; margin-right: 12px;
+      background: #e6f1fb; display: flex; align-items: center; justify-content: center;
+      color: #378add; font-size: 12px;
+    }
+    .recommend-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .recommend-title { font-size: 15px; font-weight: 600; color: #222; }
+    .floating-btn {
+      position: fixed;
+      right: 20px;
+      bottom: 100px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #d85a30;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      box-shadow: 0 4px 12px rgba(216,90,48,0.3);
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    /* Knowledge */
+    .search-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .search-input {
+      flex: 1;
+      height: 36px;
+      border: 1px solid #e5e5e5;
+      border-radius: 18px;
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+    }
+    .search-btn {
+      padding: 0 16px;
+      height: 36px;
+      background: #378add;
+      color: #fff;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+    }
+    .hot-search { margin-bottom: 12px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .hot-tag {
+      background: #f0f0f0;
+      color: #666;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .category-list {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .category-list::-webkit-scrollbar { display: none; }
+    .category-item {
+      flex-shrink: 0;
+      padding: 8px 14px;
+      background: #fff;
+      border-radius: 16px;
+      font-size: 13px;
+      color: #666;
+      cursor: pointer;
+      border: 0.5px solid #e5e5e5;
+    }
+    .category-item.active { background: #e6f1fb; color: #378add; border-color: #378add; }
+    .article-card { display: flex; padding: 12px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+    .article-card:last-child { border-bottom: none; }
+    .article-cover {
+      width: 90px; height: 90px; border-radius: 8px; margin-right: 12px;
+      background: #e6f1fb; display: flex; align-items: center; justify-content: center;
+      color: #378add; font-size: 12px; flex-shrink: 0;
+    }
+    .article-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .article-title { font-size: 15px; font-weight: 600; color: #222; margin-bottom: 6px; }
+    .article-summary { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 8px; }
+    .article-tags { display: flex; gap: 6px; }
+    .tag {
+      background: #f0f0f0;
+      color: #888;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+    }
+    .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .video-item { position: relative; border-radius: 8px; overflow: hidden; background: #f0f0f0; cursor: pointer; }
+    .video-cover { width: 100%; height: 100px; background: #e6f1fb; display: flex; align-items: center; justify-content: center; color: #1d9e75; font-size: 12px; }
+    .video-play {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.5);
+      color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .video-title { font-size: 12px; color: #333; padding: 6px; }
+
+    /* Detail */
+    .detail-cover { width: 100%; height: 200px; border-radius: 12px; background: #e6f1fb; display: flex; align-items: center; justify-content: center; color: #378add; margin-bottom: 16px; }
+    .detail-title { font-size: 20px; font-weight: 700; color: #222; margin-bottom: 10px; }
+    .detail-tags { display: flex; gap: 8px; margin-bottom: 16px; }
+    .detail-content { font-size: 15px; line-height: 1.8; color: #333; }
+    .detail-content p { margin-bottom: 12px; }
+    .detail-content strong { color: #222; }
+    .related-video { display: flex; background: #f8f9fa; border-radius: 10px; padding: 12px; cursor: pointer; }
+    .related-cover { width: 80px; height: 60px; border-radius: 6px; margin-right: 12px; background: #e6f1fb; display: flex; align-items: center; justify-content: center; color: #1d9e75; font-size: 11px; }
+    .detail-actions {
+      position: fixed; bottom: 83px; left: 50%; transform: translateX(-50%);
+      width: 375px; height: 60px; background: #fff; border-top: 0.5px solid #e5e5e5;
+      display: flex; justify-content: space-around; align-items: center;
+    }
+    .action-btn { display: flex; flex-direction: column; align-items: center; color: #666; font-size: 12px; cursor: pointer; }
+    .action-icon { font-size: 18px; margin-bottom: 2px; }
+
+    /* Card */
+    .daily-card { background: linear-gradient(135deg, #eaf3de 0%, #fff 100%); border-left: 5px solid #1d9e75; }
+    .card-date { font-size: 13px; color: #888; margin-bottom: 6px; }
+    .card-title { font-size: 20px; font-weight: 700; color: #222; margin-bottom: 20px; }
+    .warning-section { margin-bottom: 20px; }
+    .section-label { font-size: 14px; font-weight: 600; display: inline-block; padding: 3px 10px; border-radius: 10px; margin-bottom: 8px; }
+    .warning-label { background: #faece7; color: #d85a30; }
+    .warning-text { font-size: 18px; font-weight: 700; color: #d85a30; line-height: 1.5; }
+    .tip-label { background: #e1f5ee; color: #1d9e75; }
+    .tip-text { font-size: 16px; color: #333; line-height: 1.6; }
+    .poster-preview { width: 100%; border-radius: 8px; border: 0.5px solid #e5e5e5; margin-bottom: 16px; }
+    .btn-primary {
+      width: 100%; height: 44px; border-radius: 8px; background: #378add; color: #fff;
+      font-size: 16px; border: none; cursor: pointer; margin-bottom: 10px;
+    }
+    .hidden-canvas { position: fixed; left: -9999px; }
+
+    /* Profile */
+    .user-card { display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
+    .avatar { width: 64px; height: 64px; border-radius: 50%; background: #e6f1fb; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; color: #378add; font-size: 24px; }
+    .nickname { font-size: 16px; font-weight: 600; color: #222; margin-bottom: 6px; }
+    .daily-entry { display: flex; flex-direction: column; cursor: pointer; background: #faece7; border-left: 5px solid #d85a30; }
+    .daily-title { font-size: 16px; font-weight: 600; color: #d85a30; margin-bottom: 4px; }
+    .tab-bar-inner { display: flex; background: #fff; border-radius: 12px; padding: 4px; margin-bottom: 12px; }
+    .tab-inner { flex: 1; text-align: center; padding: 10px 0; font-size: 14px; color: #666; border-radius: 10px; cursor: pointer; }
+    .tab-inner.active { background: #e6f1fb; color: #378add; font-weight: 600; }
+    .list-item { display: flex; padding: 14px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+    .list-item:last-child { border-bottom: none; }
+    .list-cover { width: 70px; height: 70px; border-radius: 8px; margin-right: 12px; background: #e6f1fb; display: flex; align-items: center; justify-content: center; color: #378add; font-size: 11px; flex-shrink: 0; }
+    .list-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .list-title { font-size: 15px; font-weight: 600; color: #222; }
+
+    .empty-state { text-align: center; padding: 32px 0; color: #999; font-size: 14px; }
+
+    /* Desktop hint */
+    .desktop-hint {
+      position: fixed; bottom: 20px; left: 20px;
+      background: #fff; padding: 12px 16px; border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-size: 13px; color: #666;
+      max-width: 280px;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="notch">
+      <span>9:41</span>
+      <span>5G</span>
+    </div>
+    <div class="nav-bar">
+      <span class="nav-back" id="navBack">&lt;</span>
+      <span class="nav-title" id="navTitle">健康校园</span>
+    </div>
+    <div class="content" id="content">
+      <!-- Home Page -->
+      <div class="page active" id="page-home">
+        <div class="card banner">
+          <div class="banner-title">大学生亚健康科普</div>
+          <div class="banner-subtitle">宿舍养生 · 熬夜补救 · 久坐护颈</div>
+        </div>
+        <div class="quick-grid">
+          <div class="quick-item" onclick="switchPage('knowledge')">
+            <div class="quick-icon knowledge">&#128218;</div>
+            <span>科普资讯</span>
+          </div>
+          <div class="quick-item" onclick="switchPage('card')">
+            <div class="quick-icon card">&#128197;</div>
+            <span>每日卡片</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">推荐阅读</div>
+          <div id="recommendList"></div>
+        </div>
+      </div>
+
+      <!-- Knowledge Page -->
+      <div class="page" id="page-knowledge">
+        <div class="search-bar">
+          <input class="search-input" id="searchInput" placeholder="搜索失眠、腰痛、脱发、考前焦虑..." type="text">
+          <button class="search-btn" onclick="doSearch()">搜索</button>
+        </div>
+        <div class="hot-search">
+          <span class="text-secondary">热门搜索：</span>
+          <span class="hot-tag" onclick="quickSearch('失眠')">失眠</span>
+          <span class="hot-tag" onclick="quickSearch('颈椎痛')">颈椎痛</span>
+          <span class="hot-tag" onclick="quickSearch('脱发')">脱发</span>
+          <span class="hot-tag" onclick="quickSearch('考前焦虑')">考前焦虑</span>
+        </div>
+        <div class="category-list" id="categoryList"></div>
+        <div class="card">
+          <div class="flex-between">
+            <span class="section-title">图文科普</span>
+            <span class="text-secondary" id="articleCount">共 0 篇</span>
+          </div>
+          <div id="articleList"></div>
+        </div>
+        <div class="card">
+          <div class="flex-between">
+            <span class="section-title">短视频专区</span>
+            <span class="text-secondary">查看更多</span>
+          </div>
+          <div class="video-grid" id="videoGrid"></div>
+        </div>
+      </div>
+
+      <!-- Detail Page -->
+      <div class="page" id="page-detail">
+        <div class="detail-cover" id="detailCover">封面图</div>
+        <div class="card">
+          <div class="detail-title" id="detailTitle"></div>
+          <div class="detail-tags" id="detailTags"></div>
+          <div class="detail-content" id="detailContent"></div>
+        </div>
+        <div class="card" id="relatedVideoCard" style="display:none;">
+          <div class="section-title">相关短视频</div>
+          <div class="related-video" onclick="showToast('点击播放视频')">
+            <div class="related-cover">视频</div>
+            <div class="related-info">
+              <div class="list-title">宿舍 5 分钟颈椎拉伸</div>
+              <span class="text-secondary">点击观看</span>
+            </div>
+          </div>
+        </div>
+        <div class="detail-actions">
+          <div class="action-btn" onclick="toggleFavorite()">
+            <span class="action-icon" id="favIcon">☆</span>
+            <span id="favText">收藏</span>
+          </div>
+          <div class="action-btn">
+            <span class="action-icon">↗</span>
+            <span>转发</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Page -->
+      <div class="page" id="page-card">
+        <div class="card daily-card">
+          <div class="card-date" id="cardDate"></div>
+          <div class="card-title">每日健康卡片</div>
+          <div class="warning-section">
+            <span class="section-label warning-label">健康警示</span>
+            <div class="warning-text" id="warningText"></div>
+          </div>
+          <div class="tip-section">
+            <span class="section-label tip-label">改善小技巧</span>
+            <div class="tip-text" id="tipText"></div>
+          </div>
+        </div>
+        <div class="card" id="posterCard" style="display:none;">
+          <div class="section-title">生成海报预览</div>
+          <canvas id="posterCanvas" class="poster-preview" width="300" height="480"></canvas>
+          <button class="btn-primary" onclick="showToast('海报已保存到相册')">保存到相册</button>
+        </div>
+        <div class="card">
+          <button class="btn-primary" onclick="generatePoster()">生成海报</button>
+          <button class="btn-primary" style="background:#1d9e75;" onclick="showToast('已转发给好友')">转发给好友</button>
+        </div>
+      </div>
+
+      <!-- Profile Page -->
+      <div class="page" id="page-profile">
+        <div class="card user-card">
+          <div class="avatar">&#128100;</div>
+          <div class="nickname">同学</div>
+          <span class="text-secondary">登录后查看收藏与历史</span>
+        </div>
+        <div class="card daily-entry" onclick="switchPage('card')">
+          <div class="daily-title">每日健康卡片</div>
+          <span class="text-secondary">今日健康提醒，生成海报分享</span>
+        </div>
+        <div class="tab-bar-inner">
+          <div class="tab-inner active" onclick="switchProfileTab('favorite')">我的收藏</div>
+          <div class="tab-inner" onclick="switchProfileTab('history')">浏览历史</div>
+        </div>
+        <div class="card" id="favoriteList"></div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active" onclick="switchTab('home')">
+        <div class="tab-icon">&#127968;</div>
+        <span>首页</span>
+      </div>
+      <div class="tab-item" onclick="switchTab('knowledge')">
+        <div class="tab-icon">&#128218;</div>
+        <span>科普</span>
+      </div>
+      <div class="tab-item" onclick="switchTab('profile')">
+        <div class="tab-icon">&#128100;</div>
+        <span>我的</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="desktop-hint">
+    这是一个模拟微信小程序的网页演示，点击底部 tab 切换页面，点击卡片查看详情。
+  </div>
+
+  <script>
+    const data = {
+      articles: [
+        {
+          id: 1, title: '宿舍养生：睡前 10 分钟拉伸助眠', category: '宿舍养生',
+          summary: '简单 5 个动作，缓解久坐疲劳，提升入睡速度。',
+          tags: ['失眠', '拉伸', '放松'],
+          content: '<p><strong>动作一：颈部侧拉伸</strong></p><p>坐直，右手扶头左侧，轻轻向右拉伸，保持 15 秒，左右各做 2 组。</p><p><strong>动作二：猫牛式</strong></p><p>双手双膝撑地，吸气塌腰抬头，呼气拱背低头，重复 10 次。</p><p><strong>动作三：仰卧抱膝</strong></p><p>平躺，双膝抱向胸口，左右轻轻摇摆，放松下背部 1 分钟。</p>'
+        },
+        {
+          id: 2, title: '熬夜补救：第二天如何快速恢复状态', category: '熬夜补救',
+          summary: '熬夜后不要报复性补觉，试试这 3 个科学恢复方法。',
+          tags: ['熬夜', '疲劳', '恢复'],
+          content: '<p><strong>1. 小睡 20 分钟</strong></p><p>午后 13-15 点小睡 20 分钟，比睡 2 小时更有效。</p><p><strong>2. 补充水分和蛋白质</strong></p><p>避免高糖饮料，选择鸡蛋、牛奶、坚果。</p><p><strong>3. 适度晒太阳</strong></p><p>早晨 10 点前接触自然光，帮助调整生物钟。</p>'
+        },
+        {
+          id: 3, title: '久坐护颈：颈椎自救 3 步法', category: '久坐护颈',
+          summary: '长期低头看手机、写作业，颈椎发出求救信号？快来试试。',
+          tags: ['颈椎', '护颈', '久坐'],
+          content: '<p><strong>步骤一：收下巴</strong></p><p>后脑勺贴墙，下巴轻轻后收，保持 5 秒，重复 10 次。</p><p><strong>步骤二：肩胛收缩</strong></p><p>双臂向后打开，肩胛骨夹紧，保持 5 秒。</p><p><strong>步骤三：抬头望天</strong></p><p>缓慢抬头看天花板，再缓慢低头，重复 8 次。</p>'
+        },
+        {
+          id: 4, title: '考前情绪调节：4-7-8 呼吸法', category: '考前情绪调节',
+          summary: '考前焦虑、心跳加速？用一个呼吸法快速平静下来。',
+          tags: ['焦虑', '考试', '呼吸'],
+          content: '<p><strong>4-7-8 呼吸法</strong></p><p>1. 用鼻子吸气 4 秒</p><p>2. 屏住呼吸 7 秒</p><p>3. 用嘴缓慢呼气 8 秒</p><p>重复 4 轮，可显著降低焦虑水平。</p>'
+        },
+        {
+          id: 5, title: '减脂养胃：食堂低脂点餐技巧', category: '减脂养胃',
+          summary: '食堂也能吃出减脂餐，关键是搭配和分量控制。',
+          tags: ['减脂', '养胃', '食堂'],
+          content: '<p><strong>选菜原则</strong></p><p>1. 先选一份蛋白质（鸡胸肉、鱼、豆腐）</p><p>2. 再选两份蔬菜（青菜、西兰花、冬瓜）</p><p>3. 主食减半，避免油炸和勾芡菜</p>'
+        },
+        {
+          id: 6, title: '护眼防脱发：睡前远离屏幕 30 分钟', category: '护眼防脱发',
+          summary: '蓝光会影响褪黑素分泌，导致失眠和脱发加重。',
+          tags: ['护眼', '脱发', '睡眠'],
+          content: '<p><strong>建议</strong></p><p>睡前 30 分钟停止刷手机，改为阅读纸质书或听轻音乐。</p><p>设置手机护眼模式，并将屏幕亮度调低。</p>'
+        },
+        {
+          id: 7, title: '运动康复：宿舍自重训练计划', category: '运动康复',
+          summary: '没器材也能练，一组动作激活全身。',
+          tags: ['运动', '康复', '宿舍'],
+          content: '<p><strong>训练组合</strong></p><p>深蹲 15 次 → 俯卧撑 10 次 → 平板支撑 30 秒 → 开合跳 30 次</p><p>循环 3 组，组间休息 1 分钟。</p>'
+        }
+      ],
+      videos: [
+        { id: 1, title: '宿舍 5 分钟颈椎拉伸', category: '久坐护颈' },
+        { id: 2, title: '熬夜后如何补救', category: '熬夜补救' },
+        { id: 3, title: '食堂减脂点餐技巧', category: '减脂养胃' },
+        { id: 4, title: '考前呼吸放松法', category: '考前情绪调节' }
+      ],
+      cards: [
+        { warning: '连续熬夜会大幅加重脱发', tip: '睡前温水泡脚 10 分钟，缓解睡眠焦虑' },
+        { warning: '久坐超过 90 分钟会让颈椎压力翻倍', tip: '设个闹钟，每 90 分钟起身活动 2 分钟' },
+        { warning: '长期高糖饮料会加速皮肤衰老', tip: '把奶茶换成无糖茶或白开水，坚持一周试试看' }
+      ]
+    }
+
+    let currentCategory = '全部'
+    let favorites = new Set()
+    let history = []
+
+    const categories = ['全部', '宿舍养生', '熬夜补救', '久坐护颈', '考前情绪调节', '减脂养胃', '护眼防脱发', '运动康复']
+
+    function init() {
+      renderCategories()
+      renderArticles(data.articles)
+      renderVideos(data.videos)
+      renderRecommends()
+      initCard()
+      renderProfile()
+    }
+
+    function renderCategories() {
+      const html = categories.map(c =>
+        `<div class="category-item ${c === currentCategory ? 'active' : ''}" onclick="switchCategory('${c}')">${c}</div>`
+      ).join('')
+      document.getElementById('categoryList').innerHTML = html
+    }
+
+    function renderArticles(list) {
+      document.getElementById('articleCount').textContent = `共 ${list.length} 篇`
+      if (list.length === 0) {
+        document.getElementById('articleList').innerHTML = '<div class="empty-state">暂无相关内容</div>'
+        return
+      }
+      document.getElementById('articleList').innerHTML = list.map(a => `
+        <div class="article-card" onclick="openArticle(${a.id})">
+          <div class="article-cover">封面</div>
+          <div class="article-info">
+            <div class="article-title">${a.title}</div>
+            <div class="article-summary">${a.summary}</div>
+            <div class="article-tags">${a.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+          </div>
+        </div>
+      `).join('')
+    }
+
+    function renderVideos(list) {
+      document.getElementById('videoGrid').innerHTML = list.map(v => `
+        <div class="video-item" onclick="showToast('播放：${v.title}')">
+          <div class="video-cover">短视频</div>
+          <div class="video-play">▶</div>
+          <div class="video-title">${v.title}</div>
+        </div>
+      `).join('')
+    }
+
+    function renderRecommends() {
+      const list = data.articles.slice(0, 3)
+      document.getElementById('recommendList').innerHTML = list.map(a => `
+        <div class="recommend-item" onclick="openArticle(${a.id})">
+          <div class="recommend-cover">封面</div>
+          <div class="recommend-info">
+            <div class="recommend-title">${a.title}</div>
+            <div class="text-secondary">${a.summary}</div>
+          </div>
+        </div>
+      `).join('')
+    }
+
+    function switchCategory(c) {
+      currentCategory = c
+      renderCategories()
+      if (c === '全部') {
+        renderArticles(data.articles)
+        renderVideos(data.videos)
+      } else {
+        renderArticles(data.articles.filter(a => a.category === c))
+        renderVideos(data.videos.filter(v => v.category === c))
+      }
+    }
+
+    function doSearch() {
+      const kw = document.getElementById('searchInput').value.trim()
+      if (!kw) {
+        switchCategory('全部')
+        return
+      }
+      const list = data.articles.filter(a =>
+        a.title.includes(kw) || a.summary.includes(kw) || a.tags.some(t => t.includes(kw))
+      )
+      renderArticles(list)
+    }
+
+    function quickSearch(kw) {
+      document.getElementById('searchInput').value = kw
+      doSearch()
+    }
+
+    function openArticle(id) {
+      const a = data.articles.find(x => x.id === id)
+      if (!a) return
+      document.getElementById('detailTitle').textContent = a.title
+      document.getElementById('detailTags').innerHTML = a.tags.map(t => `<span class="tag">${t}</span>`).join('') + `<span class="tag">${a.category}</span>`
+      document.getElementById('detailContent').innerHTML = a.content
+      document.getElementById('relatedVideoCard').style.display = a.category === '久坐护颈' || a.category === '熬夜补救' ? 'block' : 'none'
+      updateFavoriteBtn(id)
+      pushHistory(a)
+      switchPage('detail')
+    }
+
+    function updateFavoriteBtn(id) {
+      const isFav = favorites.has('article-' + id)
+      document.getElementById('favIcon').textContent = isFav ? '★' : '☆'
+      document.getElementById('favText').textContent = isFav ? '已收藏' : '收藏'
+    }
+
+    function toggleFavorite() {
+      const title = document.getElementById('detailTitle').textContent
+      const a = data.articles.find(x => x.title === title)
+      if (!a) return
+      const key = 'article-' + a.id
+      if (favorites.has(key)) {
+        favorites.delete(key)
+      } else {
+        favorites.add(key)
+      }
+      updateFavoriteBtn(a.id)
+      renderProfile()
+      showToast(favorites.has(key) ? '已收藏' : '已取消')
+    }
+
+    function pushHistory(a) {
+      history = history.filter(h => h.id !== a.id)
+      history.unshift({ ...a, time: new Date().toLocaleString() })
+      renderProfile()
+    }
+
+    function initCard() {
+      const today = new Date().toISOString().split('T')[0]
+      const card = data.cards[Math.floor(Math.random() * data.cards.length)]
+      document.getElementById('cardDate').textContent = today
+      document.getElementById('warningText').textContent = card.warning
+      document.getElementById('tipText').textContent = card.tip
+    }
+
+    function generatePoster() {
+      const canvas = document.getElementById('posterCanvas')
+      const ctx = canvas.getContext('2d')
+      const w = canvas.width, h = canvas.height
+
+      ctx.fillStyle = '#EAF3DE'
+      ctx.fillRect(0, 0, w, h)
+
+      ctx.fillStyle = '#1D9E75'
+      ctx.fillRect(0, 0, w, 80)
+
+      ctx.fillStyle = '#fff'
+      ctx.font = '14px sans-serif'
+      ctx.fillText(document.getElementById('cardDate').textContent, 24, 34)
+      ctx.font = 'bold 20px sans-serif'
+      ctx.fillText('每日健康卡片', 24, 62)
+
+      ctx.fillStyle = '#D85A30'
+      ctx.font = 'bold 16px sans-serif'
+      ctx.fillText('健康警示', 24, 120)
+      ctx.fillStyle = '#333'
+      ctx.font = 'bold 18px sans-serif'
+      wrapText(ctx, document.getElementById('warningText').textContent, 24, 152, w - 48, 28)
+
+      ctx.fillStyle = '#1D9E75'
+      ctx.font = 'bold 16px sans-serif'
+      ctx.fillText('改善小技巧', 24, 240)
+      ctx.fillStyle = '#333'
+      ctx.font = '16px sans-serif'
+      wrapText(ctx, document.getElementById('tipText').textContent, 24, 272, w - 48, 26)
+
+      ctx.fillStyle = '#888'
+      ctx.font = '12px sans-serif'
+      ctx.fillText('扫码进入小程序，获取更多健康科普', 24, h - 70)
+
+      ctx.fillStyle = '#fff'
+      ctx.fillRect(w - 100, h - 110, 76, 76)
+      ctx.strokeStyle = '#ddd'
+      ctx.strokeRect(w - 100, h - 110, 76, 76)
+      ctx.fillStyle = '#000'
+      ctx.font = '10px sans-serif'
+      ctx.fillText('小程序码', w - 82, h - 70)
+
+      document.getElementById('posterCard').style.display = 'block'
+      showToast('海报已生成')
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const chars = text.split('')
+      let line = ''
+      let lineY = y
+      for (let i = 0; i < chars.length; i++) {
+        const testLine = line + chars[i]
+        const metrics = ctx.measureText(testLine)
+        if (metrics.width > maxWidth && line !== '') {
+          ctx.fillText(line, x, lineY)
+          line = chars[i]
+          lineY += lineHeight
+        } else {
+          line = testLine
+        }
+      }
+      ctx.fillText(line, x, lineY)
+    }
+
+    let currentTab = 'home'
+    let pageStack = ['home']
+
+    function switchTab(tab) {
+      currentTab = tab
+      pageStack = [tab]
+      document.querySelectorAll('.tab-item').forEach((el, idx) => {
+        const tabs = ['home', 'knowledge', 'profile']
+        el.classList.toggle('active', tabs[idx] === tab)
+      })
+      showPage(tab === 'home' ? 'page-home' : tab === 'knowledge' ? 'page-knowledge' : 'page-profile')
+      document.getElementById('navBack').style.display = 'none'
+      document.getElementById('navTitle').textContent = '健康校园'
+    }
+
+    function switchPage(page) {
+      const map = { 'knowledge': 'page-knowledge', 'card': 'page-card', 'detail': 'page-detail', 'home': 'page-home', 'profile': 'page-profile' }
+      pageStack.push(page)
+      showPage(map[page])
+      document.getElementById('navBack').style.display = 'block'
+      const titles = { 'home': '健康校园', 'knowledge': '科普资讯', 'card': '每日健康卡片', 'detail': '科普详情', 'profile': '我的' }
+      document.getElementById('navTitle').textContent = titles[page] || '健康校园'
+    }
+
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
+      document.getElementById(id).classList.add('active')
+      document.getElementById('content').scrollTop = 0
+    }
+
+    document.getElementById('navBack').onclick = function() {
+      pageStack.pop()
+      const prev = pageStack[pageStack.length - 1] || 'home'
+      if (prev === 'home' || prev === 'knowledge' || prev === 'profile') {
+        switchTab(prev)
+      } else {
+        switchPage(prev)
+      }
+      if (pageStack.length <= 1) {
+        document.getElementById('navBack').style.display = 'none'
+      }
+    }
+
+    function switchProfileTab(tab) {
+      document.querySelectorAll('.tab-inner').forEach(el => {
+        el.classList.toggle('active', el.textContent.includes(tab === 'favorite' ? '我的收藏' : '浏览历史'))
+      })
+      renderProfile(tab)
+    }
+
+    function renderProfile(tab = 'favorite') {
+      const container = document.getElementById('favoriteList')
+      if (tab === 'favorite') {
+        const favList = Array.from(favorites).map(key => {
+          const id = parseInt(key.split('-')[1])
+          return data.articles.find(a => a.id === id)
+        }).filter(Boolean)
+        if (favList.length === 0) {
+          container.innerHTML = '<div class="empty-state">暂无收藏，去科普资讯看看吧</div>'
+          return
+        }
+        container.innerHTML = favList.map(a => `
+          <div class="list-item" onclick="openArticle(${a.id})">
+            <div class="list-cover">封面</div>
+            <div class="list-info">
+              <div class="list-title">${a.title}</div>
+              <span class="text-secondary">图文 · ${a.category}</span>
+            </div>
+          </div>
+        `).join('')
+      } else {
+        if (history.length === 0) {
+          container.innerHTML = '<div class="empty-state">暂无浏览记录</div>'
+          return
+        }
+        container.innerHTML = history.map(a => `
+          <div class="list-item" onclick="openArticle(${a.id})">
+            <div class="list-cover">封面</div>
+            <div class="list-info">
+              <div class="list-title">${a.title}</div>
+              <span class="text-secondary">图文 · ${a.time}</span>
+            </div>
+          </div>
+        `).join('')
+      }
+    }
+
+    function showToast(msg) {
+      const div = document.createElement('div')
+      div.textContent = msg
+      div.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);color:#fff;padding:10px 18px;border-radius:6px;font-size:14px;z-index:100;'
+      document.body.appendChild(div)
+      setTimeout(() => div.remove(), 1500)
+    }
+
+    init()
+  </script>
+</body>
+</html>
